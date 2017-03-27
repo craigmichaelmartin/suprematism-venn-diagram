@@ -11,15 +11,15 @@
         "assets",
         "favicon.ico"
       ],
-      "index": "index.html",
-      "main": "main.ts",
+      "index": "../example/index.html",
+      "main": "../example/main.ts",
       "polyfills": "polyfills.ts",
       "test": "test.ts",
       "tsconfig": "tsconfig.app.json",
       "testTsconfig": "tsconfig.spec.json",
-      "prefix": "app",
+      "prefix": "supre",
       "styles": [
-        "styles.css"
+        "assets/styles.scss"
       ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",
@@ -51,7 +51,7 @@
     }
   },
   "defaults": {
-    "styleExt": "css",
+    "styleExt": "scss",
     "component": {}
   }
 }

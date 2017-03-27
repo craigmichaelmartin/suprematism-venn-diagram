@@ -3,7 +3,6 @@
 # compiled output
 /dist
 /tmp
-/out-tsc
 
 # dependencies
 /node_modules
@@ -16,6 +15,7 @@
 *.launch
 .settings/
 *.sublime-workspace
+*.swp
 
 # IDE - VSCode
 .vscode/*
