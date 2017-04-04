@@ -1,10 +1,11 @@
 import { Component, Input, AfterViewInit, ElementRef, ViewEncapsulation, OnDestroy, OnChanges } from '@angular/core';
 import { VennDiagram, sortAreas } from 'venn.js';
-import { select, event } from 'd3';
+import { select, event, Selection } from 'd3';
 
 export interface VennSet {
   sets: Array<string>;
   size: number;
+  color?: string;
 }
 
 @Component({
@@ -16,8 +17,9 @@ export interface VennSet {
 export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges {
 
   @Input() vennSets: Array<VennSet>;
-  tooltip: any;
-  div: any;
+  @Input() svgSquareDimension: string;
+  tooltip: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
+  div: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
 
   elementRef: ElementRef;
 
@@ -26,10 +28,9 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
   }
 
   ngOnChanges() {
-    const numberOfSets = this.vennSets.filter(x => x.sets.length === 1).length;
     const chart = VennDiagram()
-      .width(250)
-      .height(50 + (30 * numberOfSets));
+      .width(this.svgSquareDimension)
+      .height(this.svgSquareDimension);
     this.div = select(this.elementRef.nativeElement);
     this.div.datum(this.vennSets).call(chart);
   }

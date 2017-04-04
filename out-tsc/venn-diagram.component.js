@@ -17,10 +17,9 @@ var VennDiagramComponent = (function () {
         this.elementRef = elementRef;
     }
     VennDiagramComponent.prototype.ngOnChanges = function () {
-        var numberOfSets = this.vennSets.filter(function (x) { return x.sets.length === 1; }).length;
         var chart = venn_js_1.VennDiagram()
-            .width(250)
-            .height(50 + (30 * numberOfSets));
+            .width(this.svgSquareDimension)
+            .height(this.svgSquareDimension);
         this.div = d3_1.select(this.elementRef.nativeElement);
         this.div.datum(this.vennSets).call(chart);
     };
@@ -87,6 +86,10 @@ __decorate([
     core_1.Input(),
     __metadata("design:type", Array)
 ], VennDiagramComponent.prototype, "vennSets", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", String)
+], VennDiagramComponent.prototype, "svgSquareDimension", void 0);
 VennDiagramComponent = __decorate([
     core_1.Component({
         selector: 'supre-venn-diagram',
