@@ -28,6 +28,24 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
   }
 
   ngOnChanges() {
+    if (this.div) {
+      this.createVenn();
+    }
+  }
+
+  ngAfterViewInit() {
+    if (this.vennSets.length > 0) {
+      this.createVenn();
+      this.styleVenn();
+    }
+  }
+
+  ngOnDestroy() {
+    this.tooltip.remove();
+    this.div.remove();
+  }
+
+  private createVenn() {
     const chart = VennDiagram()
       .width(this.svgSquareDimension)
       .height(this.svgSquareDimension);
@@ -35,11 +53,11 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
     this.div.datum(this.vennSets).call(chart);
   }
 
-  ngAfterViewInit() {
+  private styleVenn() {
 
-    // add a tooltip
     this.tooltip = select('body')
       .append('div')
+        .style('display', 'none')
         .attr('class', 'popover top popover--venn');
 
     const div = this.div;
@@ -66,7 +84,7 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
           sortAreas(div, d);
 
 	  // Display a tooltip with the current size
-          tooltip.transition().duration(400).style('opacity', 1);
+          tooltip.style('display', 'block').transition().duration(400).style('opacity', 1);
           tooltipTitle.text(d.size + ' users');
 
 	  // highlight the current path
@@ -99,11 +117,6 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
     div.selectAll('.venn-area.venn-circle .label')
       .style('display', 'none');
 
-  }
-
-  ngOnDestroy() {
-    this.tooltip.remove();
-    this.div.remove();
   }
 
 }

@@ -17,16 +17,31 @@ var VennDiagramComponent = (function () {
         this.elementRef = elementRef;
     }
     VennDiagramComponent.prototype.ngOnChanges = function () {
+        if (this.div) {
+            this.createVenn();
+        }
+    };
+    VennDiagramComponent.prototype.ngAfterViewInit = function () {
+        if (this.vennSets.length > 0) {
+            this.createVenn();
+            this.styleVenn();
+        }
+    };
+    VennDiagramComponent.prototype.ngOnDestroy = function () {
+        this.tooltip.remove();
+        this.div.remove();
+    };
+    VennDiagramComponent.prototype.createVenn = function () {
         var chart = venn_js_1.VennDiagram()
             .width(this.svgSquareDimension)
             .height(this.svgSquareDimension);
         this.div = d3_1.select(this.elementRef.nativeElement);
         this.div.datum(this.vennSets).call(chart);
     };
-    VennDiagramComponent.prototype.ngAfterViewInit = function () {
-        // add a tooltip
+    VennDiagramComponent.prototype.styleVenn = function () {
         this.tooltip = d3_1.select('body')
             .append('div')
+            .style('display', 'none')
             .attr('class', 'popover top popover--venn');
         var div = this.div;
         var tooltip = this.tooltip;
@@ -46,7 +61,7 @@ var VennDiagramComponent = (function () {
             // sort all the areas relative to the current item
             venn_js_1.sortAreas(div, d);
             // Display a tooltip with the current size
-            tooltip.transition().duration(400).style('opacity', 1);
+            tooltip.style('display', 'block').transition().duration(400).style('opacity', 1);
             tooltipTitle.text(d.size + ' users');
             // highlight the current path
             var selection = d3_1.select(this).transition('tooltip').duration(400);
@@ -75,10 +90,6 @@ var VennDiagramComponent = (function () {
             .style('fill', function (d, i) { return d.color; });
         div.selectAll('.venn-area.venn-circle .label')
             .style('display', 'none');
-    };
-    VennDiagramComponent.prototype.ngOnDestroy = function () {
-        this.tooltip.remove();
-        this.div.remove();
     };
     return VennDiagramComponent;
 }());

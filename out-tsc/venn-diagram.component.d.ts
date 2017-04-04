@@ -15,4 +15,6 @@ export declare class VennDiagramComponent implements AfterViewInit, OnDestroy, O
     ngOnChanges(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
+    private createVenn();
+    private styleVenn();
 }
