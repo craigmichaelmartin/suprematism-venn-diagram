@@ -10,9 +10,7 @@ export interface VennSet {
 
 @Component({
   selector: 'supre-venn-diagram',
-  template: require('./venn-diagram.component.html'),
-  encapsulation: ViewEncapsulation.None,
-  styles: [require('./venn-diagram.component.scss')]
+  template: ''
 })
 export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges {
 
@@ -20,7 +18,6 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
   @Input() svgSquareDimension: string;
   tooltip: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
   div: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
-
   elementRef: ElementRef;
 
   constructor(elementRef: ElementRef) {
@@ -45,6 +42,9 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
     this.tearDownVenn();
   }
 
+  /*
+   * Remove d3 venn diagram (and its bindings) from dom
+   */
   private tearDownVenn() {
     if (this.div) {
       this.tooltip.remove();
@@ -52,15 +52,37 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
     }
   }
 
+  /*
+   * Create a d3 venn diagram via venn.js
+   */
   private createVenn() {
+    if (!this.div) {
+      this.div = select(this.elementRef.nativeElement);
+    }
     const chart = VennDiagram()
       .width(this.svgSquareDimension)
       .height(this.svgSquareDimension);
-    this.div = select(this.elementRef.nativeElement);
     this.div.datum(this.vennSets).call(chart);
   }
 
+  /*
+   * Add venn styling
+   */
   private styleVenn() {
+
+    const TRANSITION_DURATION = 400;
+
+    const CIRCLE_OPACITY = .75;
+    const CIRCLE_BORDER_WIDTH = 0;
+    const CIRCLE_BORDER_COLOR = '#fff';
+    const CIRCLE_BORDER_OPACITY = 0;
+    const ACTIVE_CIRCLE_OPACITY = .9;
+    const ACTIVE_CIRCLE_BORDER_WIDTH = 3;
+    const ACTIVE_CIRCLE_BORDER_COLOR = '#fff';
+    const ACTIVE_CIRCLE_BORDER_OPACITY = 1;
+
+    const INTERSECTION_OPACITY = 0;
+    const ACTIVE_INTERSECTION_OPACITY = .2;
 
     this.tooltip = select('body')
       .append('div')
@@ -78,11 +100,10 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
       .append('div')
         .attr('class', 'arrow');
 
-
     div.selectAll('path')
-      .style('stroke-opacity', 0)
-      .style('stroke', '#fff')
-      .style('stroke-width', 3);
+      .style('stroke-opacity', CIRCLE_BORDER_OPACITY)
+      .style('stroke', CIRCLE_BORDER_COLOR)
+      .style('stroke-width', CIRCLE_BORDER_WIDTH);
 
     // add listeners to all the groups to display tooltip on mouseover
     div.selectAll('g')
@@ -90,15 +111,16 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
           // sort all the areas relative to the current item
           sortAreas(div, d);
 
-	  // Display a tooltip with the current size
-          tooltip.style('display', 'block').transition().duration(400).style('opacity', 1);
+          // Display a tooltip with the current size
+          tooltip.style('display', 'block').transition().duration(TRANSITION_DURATION).style('opacity', 1);
           tooltipTitle.text(d.size + ' users');
 
-	  // highlight the current path
-          const selection = select(this).transition('tooltip').duration(400);
+          // highlight the current path
+          const selection = select(this).transition('tooltip').duration(TRANSITION_DURATION);
           selection.select('path')
-            .style('stroke-width', 3)
-            .style('fill-opacity', d.sets.length === 1 ? .9 : .2)
+            .style('stroke-width', ACTIVE_CIRCLE_BORDER_WIDTH)
+            .style('stroke', ACTIVE_CIRCLE_BORDER_COLOR)
+            .style('fill-opacity', d.sets.length === 1 ? ACTIVE_CIRCLE_OPACITY : ACTIVE_INTERSECTION_OPACITY)
             .style('stroke-opacity', 1);
       })
       .on('mousemove', function() {
@@ -109,21 +131,20 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
           .style('top', (event.pageY - heightOffset) + 'px');
       })
       .on('mouseout', function(d, i) {
-          tooltip.transition().duration(400).style('opacity', 0);
-          const selection = select(this).transition('tooltip').duration(400);
+          tooltip.transition().duration(TRANSITION_DURATION).style('opacity', 0);
+          const selection = select(this).transition('tooltip').duration(TRANSITION_DURATION);
           selection.select('path')
-            .style('stroke-width', 0)
-            .style('fill-opacity', d.sets.length === 1 ? .75 : .0)
-            .style('stroke-opacity', 0);
+            .style('stroke-width', CIRCLE_BORDER_WIDTH)
+            .style('fill-opacity', d.sets.length === 1 ? CIRCLE_OPACITY : INTERSECTION_OPACITY)
+            .style('stroke-opacity', CIRCLE_BORDER_OPACITY);
       });
 
     div.selectAll('.venn-circle path')
-      .style('fill-opacity', .75)
+      .style('fill-opacity', CIRCLE_OPACITY)
       .style('fill', function(d, i) { return d.color; });
 
     div.selectAll('.venn-area.venn-circle .label')
       .style('display', 'none');
-
   }
 
 }

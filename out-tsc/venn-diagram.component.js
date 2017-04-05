@@ -32,20 +32,42 @@ var VennDiagramComponent = (function () {
     VennDiagramComponent.prototype.ngOnDestroy = function () {
         this.tearDownVenn();
     };
+    /*
+     * Remove d3 venn diagram (and its bindings) from dom
+     */
     VennDiagramComponent.prototype.tearDownVenn = function () {
         if (this.div) {
             this.tooltip.remove();
             this.div.remove();
         }
     };
+    /*
+     * Create a d3 venn diagram via venn.js
+     */
     VennDiagramComponent.prototype.createVenn = function () {
+        if (!this.div) {
+            this.div = d3_1.select(this.elementRef.nativeElement);
+        }
         var chart = venn_js_1.VennDiagram()
             .width(this.svgSquareDimension)
             .height(this.svgSquareDimension);
-        this.div = d3_1.select(this.elementRef.nativeElement);
         this.div.datum(this.vennSets).call(chart);
     };
+    /*
+     * Add venn styling
+     */
     VennDiagramComponent.prototype.styleVenn = function () {
+        var TRANSITION_DURATION = 400;
+        var CIRCLE_OPACITY = .75;
+        var CIRCLE_BORDER_WIDTH = 0;
+        var CIRCLE_BORDER_COLOR = '#fff';
+        var CIRCLE_BORDER_OPACITY = 0;
+        var ACTIVE_CIRCLE_OPACITY = .9;
+        var ACTIVE_CIRCLE_BORDER_WIDTH = 3;
+        var ACTIVE_CIRCLE_BORDER_COLOR = '#fff';
+        var ACTIVE_CIRCLE_BORDER_OPACITY = 1;
+        var INTERSECTION_OPACITY = 0;
+        var ACTIVE_INTERSECTION_OPACITY = .2;
         this.tooltip = d3_1.select('body')
             .append('div')
             .style('display', 'none')
@@ -59,22 +81,23 @@ var VennDiagramComponent = (function () {
             .append('div')
             .attr('class', 'arrow');
         div.selectAll('path')
-            .style('stroke-opacity', 0)
-            .style('stroke', '#fff')
-            .style('stroke-width', 3);
+            .style('stroke-opacity', CIRCLE_BORDER_OPACITY)
+            .style('stroke', CIRCLE_BORDER_COLOR)
+            .style('stroke-width', CIRCLE_BORDER_WIDTH);
         // add listeners to all the groups to display tooltip on mouseover
         div.selectAll('g')
             .on('mouseover', function (d, i) {
             // sort all the areas relative to the current item
             venn_js_1.sortAreas(div, d);
             // Display a tooltip with the current size
-            tooltip.style('display', 'block').transition().duration(400).style('opacity', 1);
+            tooltip.style('display', 'block').transition().duration(TRANSITION_DURATION).style('opacity', 1);
             tooltipTitle.text(d.size + ' users');
             // highlight the current path
-            var selection = d3_1.select(this).transition('tooltip').duration(400);
+            var selection = d3_1.select(this).transition('tooltip').duration(TRANSITION_DURATION);
             selection.select('path')
-                .style('stroke-width', 3)
-                .style('fill-opacity', d.sets.length === 1 ? .9 : .2)
+                .style('stroke-width', ACTIVE_CIRCLE_BORDER_WIDTH)
+                .style('stroke', ACTIVE_CIRCLE_BORDER_COLOR)
+                .style('fill-opacity', d.sets.length === 1 ? ACTIVE_CIRCLE_OPACITY : ACTIVE_INTERSECTION_OPACITY)
                 .style('stroke-opacity', 1);
         })
             .on('mousemove', function () {
@@ -85,15 +108,15 @@ var VennDiagramComponent = (function () {
                 .style('top', (d3_1.event.pageY - heightOffset) + 'px');
         })
             .on('mouseout', function (d, i) {
-            tooltip.transition().duration(400).style('opacity', 0);
-            var selection = d3_1.select(this).transition('tooltip').duration(400);
+            tooltip.transition().duration(TRANSITION_DURATION).style('opacity', 0);
+            var selection = d3_1.select(this).transition('tooltip').duration(TRANSITION_DURATION);
             selection.select('path')
-                .style('stroke-width', 0)
-                .style('fill-opacity', d.sets.length === 1 ? .75 : .0)
-                .style('stroke-opacity', 0);
+                .style('stroke-width', CIRCLE_BORDER_WIDTH)
+                .style('fill-opacity', d.sets.length === 1 ? CIRCLE_OPACITY : INTERSECTION_OPACITY)
+                .style('stroke-opacity', CIRCLE_BORDER_OPACITY);
         });
         div.selectAll('.venn-circle path')
-            .style('fill-opacity', .75)
+            .style('fill-opacity', CIRCLE_OPACITY)
             .style('fill', function (d, i) { return d.color; });
         div.selectAll('.venn-area.venn-circle .label')
             .style('display', 'none');
@@ -111,9 +134,7 @@ __decorate([
 VennDiagramComponent = __decorate([
     core_1.Component({
         selector: 'supre-venn-diagram',
-        template: require('./venn-diagram.component.html'),
-        encapsulation: core_1.ViewEncapsulation.None,
-        styles: [require('./venn-diagram.component.scss')]
+        template: ''
     }),
     __metadata("design:paramtypes", [core_1.ElementRef])
 ], VennDiagramComponent);
