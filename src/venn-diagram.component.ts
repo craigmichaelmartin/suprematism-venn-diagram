@@ -5,6 +5,7 @@ import { select, event, Selection } from 'd3';
 export interface VennSet {
   sets: Array<string>;
   size: number;
+  fraction: number;
   color?: string;
 }
 
@@ -113,7 +114,9 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
 
           // Display a tooltip with the current size
           tooltip.style('display', 'block').transition().duration(TRANSITION_DURATION).style('opacity', 1);
-          tooltipTitle.text(d.size + ' users');
+          const reach = d.size.toLocaleString('en');
+          const percentage = d.fraction.toLocaleString('en', {style: 'percent', minimumFractionDigits: 2});
+          tooltipTitle.text(`${reach} | ${percentage}`);
 
           // highlight the current path
           const selection = select(this).transition('tooltip').duration(TRANSITION_DURATION);

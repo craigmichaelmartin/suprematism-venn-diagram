@@ -3,6 +3,7 @@ import { Selection } from 'd3';
 export interface VennSet {
     sets: Array<string>;
     size: number;
+    fraction: number;
     color?: string;
 }
 export declare class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges {

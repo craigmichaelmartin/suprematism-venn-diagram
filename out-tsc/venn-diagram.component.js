@@ -91,7 +91,9 @@ var VennDiagramComponent = (function () {
             venn_js_1.sortAreas(div, d);
             // Display a tooltip with the current size
             tooltip.style('display', 'block').transition().duration(TRANSITION_DURATION).style('opacity', 1);
-            tooltipTitle.text(d.size + ' users');
+            var reach = d.size.toLocaleString('en');
+            var percentage = d.fraction.toLocaleString('en', { style: 'percent', minimumFractionDigits: 2 });
+            tooltipTitle.text(reach + " | " + percentage);
             // highlight the current path
             var selection = d3_1.select(this).transition('tooltip').duration(TRANSITION_DURATION);
             selection.select('path')
