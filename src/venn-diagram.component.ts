@@ -28,21 +28,28 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
   }
 
   ngOnChanges() {
-    if (this.div) {
+    if (this.vennSets.length > 0) {
       this.createVenn();
+    } else {
+      this.tearDownVenn();
     }
   }
 
   ngAfterViewInit() {
     if (this.vennSets.length > 0) {
-      this.createVenn();
       this.styleVenn();
     }
   }
 
   ngOnDestroy() {
-    this.tooltip.remove();
-    this.div.remove();
+    this.tearDownVenn();
+  }
+
+  private tearDownVenn() {
+    if (this.div) {
+      this.tooltip.remove();
+      this.div.remove();
+    }
   }
 
   private createVenn() {

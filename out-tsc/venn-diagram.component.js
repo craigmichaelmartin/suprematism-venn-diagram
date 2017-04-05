@@ -17,19 +17,26 @@ var VennDiagramComponent = (function () {
         this.elementRef = elementRef;
     }
     VennDiagramComponent.prototype.ngOnChanges = function () {
-        if (this.div) {
+        if (this.vennSets.length > 0) {
             this.createVenn();
+        }
+        else {
+            this.tearDownVenn();
         }
     };
     VennDiagramComponent.prototype.ngAfterViewInit = function () {
         if (this.vennSets.length > 0) {
-            this.createVenn();
             this.styleVenn();
         }
     };
     VennDiagramComponent.prototype.ngOnDestroy = function () {
-        this.tooltip.remove();
-        this.div.remove();
+        this.tearDownVenn();
+    };
+    VennDiagramComponent.prototype.tearDownVenn = function () {
+        if (this.div) {
+            this.tooltip.remove();
+            this.div.remove();
+        }
     };
     VennDiagramComponent.prototype.createVenn = function () {
         var chart = venn_js_1.VennDiagram()
