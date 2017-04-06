@@ -58,7 +58,7 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
    */
   private createVenn() {
     if (!this.div) {
-      this.div = select(this.elementRef.nativeElement);
+      this.div = <Selection<HTMLElement, Array<VennSet>, HTMLElement, any>>select(this.elementRef.nativeElement);
     }
     const chart = VennDiagram()
       .width(this.svgSquareDimension)
@@ -88,7 +88,7 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
     const INTERSECTION_OPACITY = 0;
     const ACTIVE_INTERSECTION_OPACITY = .2;
 
-    this.tooltip = select('body')
+    this.tooltip = <Selection<HTMLElement, Array<VennSet>, HTMLElement, any>>select('body')
       .append('div')
         .style('display', 'none')
         .attr('class', 'popover top popover--venn');
@@ -111,9 +111,9 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
 
     // add listeners to all the groups to display tooltip on mouseover
     div.selectAll('g')
-      .on('mouseover', function(d, i) {
+      .on('mouseover', function(vennSet: VennSet, i) {
           // sort all the areas relative to the current item
-          sortAreas(div, d);
+          sortAreas(div, vennSet);
 
           // Display a tooltip with the current size
           tooltip
@@ -121,8 +121,8 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
             .transition()
             .duration(TRANSITION_DURATION)
             .style('opacity', ACTIVE_TOOLTIP_OPACITY);
-          const reach = d.size.toLocaleString('en');
-          const percentage = d.fraction.toLocaleString('en', {
+          const reach = vennSet.size.toLocaleString('en');
+          const percentage = vennSet.fraction.toLocaleString('en', {
             style: 'percent',
             minimumFractionDigits: 2
           });
@@ -133,7 +133,7 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
           selection.select('path')
             .style('stroke-width', ACTIVE_CIRCLE_BORDER_WIDTH)
             .style('stroke', ACTIVE_CIRCLE_BORDER_COLOR)
-            .style('fill-opacity', d.sets.length === 1 ? ACTIVE_CIRCLE_OPACITY : ACTIVE_INTERSECTION_OPACITY)
+            .style('fill-opacity', vennSet.sets.length === 1 ? ACTIVE_CIRCLE_OPACITY : ACTIVE_INTERSECTION_OPACITY)
             .style('stroke-opacity', ACTIVE_CIRCLE_BORDER_OPACITY);
       })
       .on('mousemove', function() {
@@ -143,18 +143,18 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
           .style('left', (event.pageX - widthOffset) + 'px')
           .style('top', (event.pageY - heightOffset) + 'px');
       })
-      .on('mouseout', function(d, i) {
+      .on('mouseout', function(vennSet: VennSet, i) {
           tooltip.transition().duration(TRANSITION_DURATION).style('opacity', TOOLTIP_OPACITY);
           const selection = select(this).transition('tooltip').duration(TRANSITION_DURATION);
           selection.select('path')
             .style('stroke-width', CIRCLE_BORDER_WIDTH)
-            .style('fill-opacity', d.sets.length === 1 ? CIRCLE_OPACITY : INTERSECTION_OPACITY)
+            .style('fill-opacity', vennSet.sets.length === 1 ? CIRCLE_OPACITY : INTERSECTION_OPACITY)
             .style('stroke-opacity', CIRCLE_BORDER_OPACITY);
       });
 
     div.selectAll('.venn-circle path')
       .style('fill-opacity', CIRCLE_OPACITY)
-      .style('fill', function(d, i) { return d.color; });
+      .style('fill', function(vennSet: VennSet, i) { return vennSet.color; });
 
     div.selectAll('.venn-area.venn-circle .label')
       .style('display', 'none');
