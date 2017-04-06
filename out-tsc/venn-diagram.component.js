@@ -58,6 +58,8 @@ var VennDiagramComponent = (function () {
      */
     VennDiagramComponent.prototype.styleVenn = function () {
         var TRANSITION_DURATION = 400;
+        var TOOLTIP_OPACITY = 0;
+        var ACTIVE_TOOLTIP_OPACITY = 1;
         var CIRCLE_OPACITY = .75;
         var CIRCLE_BORDER_WIDTH = 0;
         var CIRCLE_BORDER_COLOR = '#fff';
@@ -90,9 +92,16 @@ var VennDiagramComponent = (function () {
             // sort all the areas relative to the current item
             venn_js_1.sortAreas(div, d);
             // Display a tooltip with the current size
-            tooltip.style('display', 'block').transition().duration(TRANSITION_DURATION).style('opacity', 1);
+            tooltip
+                .style('display', 'block')
+                .transition()
+                .duration(TRANSITION_DURATION)
+                .style('opacity', ACTIVE_TOOLTIP_OPACITY);
             var reach = d.size.toLocaleString('en');
-            var percentage = d.fraction.toLocaleString('en', { style: 'percent', minimumFractionDigits: 2 });
+            var percentage = d.fraction.toLocaleString('en', {
+                style: 'percent',
+                minimumFractionDigits: 2
+            });
             tooltipTitle.text(reach + " | " + percentage);
             // highlight the current path
             var selection = d3_1.select(this).transition('tooltip').duration(TRANSITION_DURATION);
@@ -100,7 +109,7 @@ var VennDiagramComponent = (function () {
                 .style('stroke-width', ACTIVE_CIRCLE_BORDER_WIDTH)
                 .style('stroke', ACTIVE_CIRCLE_BORDER_COLOR)
                 .style('fill-opacity', d.sets.length === 1 ? ACTIVE_CIRCLE_OPACITY : ACTIVE_INTERSECTION_OPACITY)
-                .style('stroke-opacity', 1);
+                .style('stroke-opacity', ACTIVE_CIRCLE_BORDER_OPACITY);
         })
             .on('mousemove', function () {
             var widthOffset = parseInt(getComputedStyle(tooltip.node()).width, 10) / 2;
@@ -110,7 +119,7 @@ var VennDiagramComponent = (function () {
                 .style('top', (d3_1.event.pageY - heightOffset) + 'px');
         })
             .on('mouseout', function (d, i) {
-            tooltip.transition().duration(TRANSITION_DURATION).style('opacity', 0);
+            tooltip.transition().duration(TRANSITION_DURATION).style('opacity', TOOLTIP_OPACITY);
             var selection = d3_1.select(this).transition('tooltip').duration(TRANSITION_DURATION);
             selection.select('path')
                 .style('stroke-width', CIRCLE_BORDER_WIDTH)

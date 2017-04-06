@@ -73,6 +73,9 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
 
     const TRANSITION_DURATION = 400;
 
+    const TOOLTIP_OPACITY = 0;
+    const ACTIVE_TOOLTIP_OPACITY = 1;
+
     const CIRCLE_OPACITY = .75;
     const CIRCLE_BORDER_WIDTH = 0;
     const CIRCLE_BORDER_COLOR = '#fff';
@@ -113,9 +116,16 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
           sortAreas(div, d);
 
           // Display a tooltip with the current size
-          tooltip.style('display', 'block').transition().duration(TRANSITION_DURATION).style('opacity', 1);
+          tooltip
+            .style('display', 'block')
+            .transition()
+            .duration(TRANSITION_DURATION)
+            .style('opacity', ACTIVE_TOOLTIP_OPACITY);
           const reach = d.size.toLocaleString('en');
-          const percentage = d.fraction.toLocaleString('en', {style: 'percent', minimumFractionDigits: 2});
+          const percentage = d.fraction.toLocaleString('en', {
+            style: 'percent',
+            minimumFractionDigits: 2
+          });
           tooltipTitle.text(`${reach} | ${percentage}`);
 
           // highlight the current path
@@ -124,7 +134,7 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
             .style('stroke-width', ACTIVE_CIRCLE_BORDER_WIDTH)
             .style('stroke', ACTIVE_CIRCLE_BORDER_COLOR)
             .style('fill-opacity', d.sets.length === 1 ? ACTIVE_CIRCLE_OPACITY : ACTIVE_INTERSECTION_OPACITY)
-            .style('stroke-opacity', 1);
+            .style('stroke-opacity', ACTIVE_CIRCLE_BORDER_OPACITY);
       })
       .on('mousemove', function() {
         const widthOffset = parseInt(getComputedStyle(tooltip.node()).width, 10) / 2;
@@ -134,7 +144,7 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
           .style('top', (event.pageY - heightOffset) + 'px');
       })
       .on('mouseout', function(d, i) {
-          tooltip.transition().duration(TRANSITION_DURATION).style('opacity', 0);
+          tooltip.transition().duration(TRANSITION_DURATION).style('opacity', TOOLTIP_OPACITY);
           const selection = select(this).transition('tooltip').duration(TRANSITION_DURATION);
           selection.select('path')
             .style('stroke-width', CIRCLE_BORDER_WIDTH)
