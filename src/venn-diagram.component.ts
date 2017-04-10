@@ -1,4 +1,4 @@
-import { Component, Input, AfterViewInit, ElementRef, ViewEncapsulation, OnDestroy, OnChanges } from '@angular/core';
+import { Component, Input, ElementRef, ViewEncapsulation, OnDestroy, OnChanges } from '@angular/core';
 import { VennDiagram, sortAreas } from 'venn.js';
 import { select, event, Selection } from 'd3';
 
@@ -13,7 +13,7 @@ export interface VennSet {
   selector: 'supre-venn-diagram',
   template: ''
 })
-export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges {
+export class VennDiagramComponent implements OnDestroy, OnChanges {
 
   @Input() vennSets: Array<VennSet>;
   @Input() svgSquareDimension: string;
@@ -30,12 +30,6 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
       this.createVenn();
     } else {
       this.tearDownVenn();
-    }
-  }
-
-  ngAfterViewInit() {
-    if (this.vennSets.length > 0) {
-      this.styleVenn();
     }
   }
 
@@ -64,6 +58,7 @@ export class VennDiagramComponent implements AfterViewInit, OnDestroy, OnChanges
       .width(this.svgSquareDimension)
       .height(this.svgSquareDimension);
     this.div.datum(this.vennSets).call(chart);
+    this.styleVenn();
   }
 
   /*
