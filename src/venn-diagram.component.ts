@@ -29,6 +29,9 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
 
   ngOnChanges() {
     if (this.vennSets.length > 0) {
+      if (this.div) {
+        this.tooltip.remove();
+      }
       this.createVenn();
     } else {
       this.tearDownVenn();
