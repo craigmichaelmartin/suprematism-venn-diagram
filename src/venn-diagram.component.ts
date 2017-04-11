@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, ViewEncapsulation, OnDestroy, OnChanges } from '@angular/core';
+import { Component, Input, ElementRef, OnDestroy, OnChanges, ViewEncapsulation } from '@angular/core';
 import { VennDiagram, sortAreas } from 'venn.js';
 import { select, event, Selection } from 'd3';
 
@@ -11,7 +11,9 @@ export interface VennSet {
 
 @Component({
   selector: 'supre-venn-diagram',
-  template: ''
+  template: '',
+  encapsulation: ViewEncapsulation.None,
+  styles: [ require('../../suprematism-popover/src/popover.scss') ]
 })
 export class VennDiagramComponent implements OnDestroy, OnChanges {
 
