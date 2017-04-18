@@ -19,6 +19,8 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
 
   @Input() vennSets: Array<VennSet>;
   @Input() svgSquareDimension: string;
+  @Input() rendering: 'primary'|'hollow' = 'primary';
+  @Input() showTextLabel = false;
   tooltip: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
   div: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
   elementRef: ElementRef;
@@ -71,22 +73,29 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
    */
   private styleVenn() {
 
+    const rendering = this.rendering;
     const TRANSITION_DURATION = 400;
-
     const TOOLTIP_OPACITY = 0;
     const ACTIVE_TOOLTIP_OPACITY = 1;
-
-    const CIRCLE_OPACITY = .75;
-    const CIRCLE_BORDER_WIDTH = 0;
+    let CIRCLE_OPACITY = .75;
+    let CIRCLE_BORDER_WIDTH = 0;
     const CIRCLE_BORDER_COLOR = '#fff';
-    const CIRCLE_BORDER_OPACITY = 0;
-    const ACTIVE_CIRCLE_OPACITY = .9;
-    const ACTIVE_CIRCLE_BORDER_WIDTH = 3;
+    let CIRCLE_BORDER_OPACITY = 0;
+    let ACTIVE_CIRCLE_OPACITY = .9;
+    let ACTIVE_CIRCLE_BORDER_WIDTH = 3;
     const ACTIVE_CIRCLE_BORDER_COLOR = '#fff';
-    const ACTIVE_CIRCLE_BORDER_OPACITY = 1;
-
+    let ACTIVE_CIRCLE_BORDER_OPACITY = 1;
     const INTERSECTION_OPACITY = 0;
     const ACTIVE_INTERSECTION_OPACITY = .2;
+
+    if (rendering === 'hollow') {
+      CIRCLE_OPACITY = 0;
+      CIRCLE_BORDER_WIDTH = 3;
+      CIRCLE_BORDER_OPACITY = .75;
+      ACTIVE_CIRCLE_OPACITY = 0;
+      ACTIVE_CIRCLE_BORDER_WIDTH = 3;
+      ACTIVE_CIRCLE_BORDER_OPACITY = .9;
+    }
 
     this.tooltip = <Selection<HTMLElement, Array<VennSet>, HTMLElement, any>>select('body')
       .append('div')
@@ -106,7 +115,7 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
 
     div.selectAll('path')
       .style('stroke-opacity', CIRCLE_BORDER_OPACITY)
-      .style('stroke', CIRCLE_BORDER_COLOR)
+      .style('stroke', (vennSet: VennSet, i) => rendering === 'hollow' ? vennSet.color : CIRCLE_BORDER_COLOR)
       .style('stroke-width', CIRCLE_BORDER_WIDTH);
 
     // add listeners to all the groups to display tooltip on mouseover
@@ -132,7 +141,7 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
           const selection = select(this).transition('tooltip').duration(TRANSITION_DURATION);
           selection.select('path')
             .style('stroke-width', ACTIVE_CIRCLE_BORDER_WIDTH)
-            .style('stroke', ACTIVE_CIRCLE_BORDER_COLOR)
+            .style('stroke', (vs: VennSet) => rendering === 'hollow' ? vs.color : CIRCLE_BORDER_COLOR)
             .style('fill-opacity', vennSet.sets.length === 1 ? ACTIVE_CIRCLE_OPACITY : ACTIVE_INTERSECTION_OPACITY)
             .style('stroke-opacity', ACTIVE_CIRCLE_BORDER_OPACITY);
       })
@@ -156,8 +165,10 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
       .style('fill-opacity', CIRCLE_OPACITY)
       .style('fill', function(vennSet: VennSet, i) { return vennSet.color; });
 
-    div.selectAll('.venn-area.venn-circle .label')
-      .style('display', 'none');
+    if (!this.showTextLabel) {
+      div.selectAll('.venn-area.venn-circle .label')
+        .style('display', 'none');
+    }
   }
 
 }
