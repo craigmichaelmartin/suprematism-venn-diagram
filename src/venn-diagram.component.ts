@@ -33,6 +33,10 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
   }
 
   ngOnChanges() {
+    this.elementRef.nativeElement.style.width = `${this.svgSquareDimension}px`;
+    this.elementRef.nativeElement.style.height = `${this.svgSquareDimension}px`;
+    this.elementRef.nativeElement.style.display = 'block';
+    this.vennSets = this.vennSets.filter(vennSet => vennSet.size);
     if (this.vennSets.length > 0) {
       if (this.div) {
         this.tooltip.remove();
