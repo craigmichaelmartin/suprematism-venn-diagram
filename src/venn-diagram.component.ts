@@ -82,6 +82,7 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
 
     const isHollow = this.rendering === 'hollow';
 
+    const OFFSCREEN_LEFT_POSITION = '-99999px';
     const TRANSITION_DURATION = 400;
     const TOOLTIP_OPACITY = 0;
     const ACTIVE_TOOLTIP_OPACITY = 1;
@@ -164,7 +165,9 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
           .style('top', (event.pageY - heightOffset) + 'px');
       })
       .on('mouseout', function(vennSet: VennSet, i) {
-          tooltip.transition().duration(TRANSITION_DURATION).style('opacity', TOOLTIP_OPACITY);
+          tooltip
+            .transition().duration(TRANSITION_DURATION).style('opacity', TOOLTIP_OPACITY)
+            .on('end', () => tooltip.style('left', OFFSCREEN_LEFT_POSITION));
           const selection = select(this).transition('tooltip').duration(TRANSITION_DURATION);
           selection.select('path')
             .style('stroke-width', CIRCLE_BORDER_WIDTH)
