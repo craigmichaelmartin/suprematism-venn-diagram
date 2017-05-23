@@ -25,7 +25,7 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
   @Input() rendering: 'primary'|'hollow' = 'primary';
   @Input() showTextLabel = false;
   tooltip: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
-  div: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
+  d3Div: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
   elementRef: ElementRef;
 
   constructor(elementRef: ElementRef) {
@@ -38,7 +38,7 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
     this.elementRef.nativeElement.style.display = 'block';
     this.vennSets = this.vennSets.filter(vennSet => vennSet.size);
     if (this.vennSets.length > 0) {
-      if (this.div) {
+      if (this.d3Div) {
         this.tooltip.remove();
       }
       this.createVenn();
@@ -55,9 +55,9 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
    * Remove d3 venn diagram (and its bindings) from dom
    */
   private tearDownVenn() {
-    if (this.div) {
+    if (this.d3Div) {
       this.tooltip.remove();
-      this.div.remove();
+      this.d3Div.remove();
     }
   }
 
@@ -65,13 +65,15 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
    * Create a d3 venn diagram via venn.js
    */
   private createVenn() {
-    if (!this.div) {
-      this.div = <Selection<HTMLElement, Array<VennSet>, HTMLElement, any>>select(this.elementRef.nativeElement);
-    }
+    const div = document.createElement('div');
+    this.d3Div = <Selection<HTMLDivElement, Array<VennSet>, HTMLElement, any>>select(div);
+    const parent = this.elementRef.nativeElement;
+    parent.innerHTML = '';
+    parent.appendChild(div);
     const chart = VennDiagram()
       .width(this.svgSquareDimension)
       .height(this.svgSquareDimension);
-    this.div.datum(this.vennSets).call(chart);
+    this.d3Div.datum(this.vennSets).call(chart);
     this.styleVenn();
   }
 
@@ -114,7 +116,7 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
         .style('display', 'none')
         .attr('class', 'popover top popover--venn');
 
-    const div = this.div;
+    const d3Div = this.d3Div;
     const tooltip = this.tooltip;
 
     const tooltipTitle = tooltip
@@ -125,16 +127,16 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
       .append('div')
         .attr('class', 'arrow');
 
-    div.selectAll('path')
+    d3Div.selectAll('path')
       .style('stroke-opacity', CIRCLE_BORDER_OPACITY)
       .attr('class', getClassFromVennSet)
       .style('stroke-width', CIRCLE_BORDER_WIDTH);
 
     // add listeners to all the groups to display tooltip on mouseover
-    div.selectAll('g')
+    d3Div.selectAll('g')
       .on('mouseover', function(vennSet: VennSet, i) {
           // sort all the areas relative to the current item
-          sortAreas(div, vennSet);
+          sortAreas(d3Div, vennSet);
 
           // Display a tooltip with the current size
           tooltip
@@ -176,12 +178,12 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
             .style('stroke-opacity', CIRCLE_BORDER_OPACITY);
       });
 
-    div.selectAll('.venn-circle path')
+    d3Div.selectAll('.venn-circle path')
       .style('fill-opacity', CIRCLE_OPACITY)
       .attr('class', getClassFromVennSet);
 
     if (!this.showTextLabel) {
-      div.selectAll('.venn-area.venn-circle .label')
+      d3Div.selectAll('.venn-area.venn-circle .label')
         .style('display', 'none');
     }
   }
