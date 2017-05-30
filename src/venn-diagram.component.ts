@@ -24,6 +24,7 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
   @Input() svgSquareDimension: string;
   @Input() rendering: 'primary'|'hollow' = 'primary';
   @Input() showTextLabel = false;
+  @Input() faded = false;
   tooltip: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
   d3Div: Selection<HTMLElement, Array<VennSet>, HTMLElement, any>;
   elementRef: ElementRef;
@@ -106,6 +107,11 @@ export class VennDiagramComponent implements OnDestroy, OnChanges {
       ACTIVE_CIRCLE_OPACITY = 0;
       ACTIVE_CIRCLE_BORDER_WIDTH = 3;
       ACTIVE_CIRCLE_BORDER_OPACITY = .9;
+      if (this.faded) {
+        CIRCLE_BORDER_OPACITY = .3;
+      }
+    } else if (this.faded) {
+      CIRCLE_OPACITY = .2;
     }
 
     const circleStroke = (vennSet: VennSet, i) => isHollow ? vennSet.strokeColorClass : CIRCLE_BORDER_COLOR;
