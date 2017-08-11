@@ -7,16 +7,9 @@ import { AppComponent } from './app.component';
 import { VennDiagramModule } from '../../src/index';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    HttpModule,
-    VennDiagramModule
-  ],
+  declarations: [AppComponent],
+  imports: [BrowserModule, FormsModule, HttpModule, VennDiagramModule],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
