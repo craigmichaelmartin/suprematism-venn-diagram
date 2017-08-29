@@ -4,6 +4,8 @@
 
 [![Build Status][travis-badge]][travis-badge-url]
 
+# DEPRECATED - Please use the [suprematism library](https://github.com/CINBCUniversal/suprematism)
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0.
 
 ## Development server
